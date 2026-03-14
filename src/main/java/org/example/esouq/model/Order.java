@@ -1,13 +1,11 @@
 package org.example.esouq.model;
 
-
-import org.springframework.stereotype.Component;
-
-@Component
 public class Order {
     private int orderId;
     private String orderStatus;
     private String shippingAddress;
+
+    public Order() {};
 
     public int getOrderId() {
         return orderId;

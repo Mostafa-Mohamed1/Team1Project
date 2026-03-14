@@ -1,12 +1,11 @@
 package org.example.esouq.model;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class Product {
         private int productId;
         private String name;
         private double price;
+
+    public Product() {};
 
     public int getProductId() {
         return productId;

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html><body>
+<h1>Add E-Souq Order</h1>
+<form method="POST" action="/orders/add">
+    Order ID: <input name="orderId" type="number" required><br><br>
+    Status: <input name="orderStatus" required><br><br>
+    Shipping Address: <textarea name="shippingAddress" required></textarea><br><br>
+    <button>Add Order</button>
+</form>
+<p><a href="/orders">Orders</a> | <a href="/">Home</a></p>
+</body>
+</html>
