@@ -1,8 +1,9 @@
 package org.example.esouq;
 
+import org.example.esouq.model.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class MainController {
@@ -34,6 +35,22 @@ public class MainController {
     @GetMapping("/products/add")
     public String addProductPage() {
         return "add-product";
+    }
+
+    // Submit product
+    @PostMapping("/products/add")
+    public String addProductSubmit(@RequestParam int productId, @RequestParam String name, @RequestParam double price){
+        Product product = new Product(productId, name, price);
+        eSouqService.addProduct(product);
+
+        return "redirect:/add/success/product";
+    }
+
+    //Success page controller
+    @GetMapping("/add/success/{entityName}")
+    public String addSuccess(@PathVariable String entityName, Model model){
+        model.addAttribute("entityName", entityName);
+        return "add-success";
     }
 
     @GetMapping("/customers/add")
