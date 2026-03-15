@@ -30,6 +30,23 @@ public class ESouqService {
 
         customers.add(c1);
         customers.add(c2);
+
+        Order order1 = new Order();
+        order1.setOrderId(1);
+        order1.setOrderStatus("Shipped");
+        order1.setShippingAddress("123 Residential");
+        order1.setCustomer(c1);     //Ali
+        order1.setProduct(p1);      //Mac laptop
+
+        Order order2 = new Order();
+        order2.setOrderId(2);
+        order2.setOrderStatus("Delivered");
+        order2.setShippingAddress("124 Residential");
+        order2.setCustomer(c2);     //Sara
+        order2.setProduct(p2);      //iphone
+
+        orders.add(order1);
+        orders.add(order2);
     }
 
     public List<Product> getProducts() {
