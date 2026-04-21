@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>E-Souq Products</title>
+</head>
+<body>
+<h1>Products</h1>
+<table border="1">
+    <tr><th>ID</th><th>Name</th><th>Price</th></tr>
+    {{#products}}
+        <tr>
+            <td>{{productId}}</td>
+            <td>{{name}}</td>
+            <td>{{price}}</td>
+        </tr>
+    {{/products}}
+</table>
+<a href="/">Home</a>
+</body>
+</html>
