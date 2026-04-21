@@ -1,10 +1,23 @@
 package org.example.esouq.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name ="orders" )
 public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
+
     private String orderStatus;
     private String shippingAddress;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public Order() {};
