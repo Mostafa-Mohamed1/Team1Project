@@ -1,17 +1,48 @@
-package org.example.esouq.repositories;
+package org.example.esouq.services;
 
 import org.example.esouq.modules.Product;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.example.esouq.repositories.ProductDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductDAO extends JpaRepository<Product, Long> {
-  
-      List<Product> findByName(String name);
+@Service
+public class ProductService {
 
-      @Query("SELECT p FROM Product p WHERE p.productId = :id")
-      Optional<Product> getProductById(@Param("id") Long id);
+      @Autowired
+      private ProductDAO productDAO;
+
+      public Product saveProduct(Product product) {
+          return productDAO.save(product);
+      }
+
+      public List<Product> getAllProducts() {
+          return productDAO.findAll();
+      }
+
+
+      public Optional<Product> getProductById(Long id) {
+
+          return productDAO.getProductById(id);
+      }
+
+      public List<Product> getProductsByName(String name) {
+          return productDAO.findByName(name);
+      }
+    
+      @Transactional
+      public void deleteProductById(Long id) {
+          productDAO.deleteById(id);
+      }
+
+      @Transactional
+      public Product updateById(Long id, Product productToUpdate) {
+          Product existingProduct = productDAO.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+          existingProduct.setName(productToUpdate.getName());
+          existingProduct.setPrice(productToUpdate.getPrice());
+          return productDAO.save(existingProduct);
+      }
 }
