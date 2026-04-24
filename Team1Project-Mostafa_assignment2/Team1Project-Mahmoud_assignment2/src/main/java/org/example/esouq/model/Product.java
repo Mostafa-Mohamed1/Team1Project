@@ -1,23 +1,34 @@
 package org.example.esouq.model;
 
+import jakarta.persistence.*;
+
+@Entity()
+@Table(name = "products")
 public class Product {
-        private int productId;
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "Product_ID")
+        private Long productId;
+
+        @Column(name = "Name", length = 30, nullable = false)
         private String name;
+
+        @Column(name = "Price", nullable = false)
         private double price;
 
     public Product() {};
 
-    public Product(int productId,String name, double price) {
-        this.productId = productId;
+    public Product(String name, double price) {
         this.name = name;
         this.price = price;
     }
 
-    public int getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
