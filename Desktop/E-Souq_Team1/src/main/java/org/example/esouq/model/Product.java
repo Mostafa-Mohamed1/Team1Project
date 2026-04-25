@@ -17,7 +17,7 @@ public class Product {
         @Column(name = "Price", nullable = false)
         private double price;
 
-    public Product() {};
+    public Product(int i, String macLaptop, int i1) {};
 
     public Product(String name, double price) {
         this.name = name;
