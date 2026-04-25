@@ -1,6 +1,6 @@
 package org.example.esouq.repositories;
 
-import org.example.esouq.modules.Product;
+import org.example.esouq.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

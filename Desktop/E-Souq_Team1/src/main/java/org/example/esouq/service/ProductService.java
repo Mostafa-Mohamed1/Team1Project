@@ -1,6 +1,6 @@
-package org.example.esouq.services;
+package org.example.esouq.service;
 
-import org.example.esouq.modules.Product;
+import org.example.esouq.model.Product;
 import org.example.esouq.repositories.ProductDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

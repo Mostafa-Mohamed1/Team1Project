@@ -1,4 +1,4 @@
-package org.example.esouq.Service;
+package org.example.esouq.service;
 
 import jakarta.transaction.Transactional;
 import org.example.esouq.model.Order;
