@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,7 +16,8 @@ public interface OrderDAO extends JpaRepository<Order, Integer> {
     @Query("SELECT o FROM Order o WHERE o.shippingAddress = :address")
     List<Order> findByShippingAddress(@Param("address") String address);
 
+    @Transactional
     @Modifying
     @Query("UPDATE Order o SET o.orderStatus = :status WHERE o.orderId = :id")
-    void updateOrderStatusById(@Param("id") int id, @Param("status") String status);
+    int updateOrderStatusById(@Param("id") int id, @Param("status") String status);
 }

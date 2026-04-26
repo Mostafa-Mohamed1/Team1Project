@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders - E‑Souq</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body { background: #f4f6f9; font-family: 'Segoe UI', Arial, sans-serif; }
+        .page { max-width: 1300px; margin: auto; padding: 1.5rem; }
+        .card-custom { border-radius: 1rem; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); transition: 0.2s; }
+        .card-custom:hover { box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1); }
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1100; }
+        .table-responsive { border-radius: 1rem; overflow: hidden; }
+        .btn-action { margin: 0 2px; }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- header and nav -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-success"><i class="bi bi-truck"></i> Orders</h1>
+        <div>
+            <a href="index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-house"></i> Home</a>
+            <a href="products.html" class="btn btn-outline-secondary btn-sm">Products</a>
+            <a href="categories.html" class="btn btn-outline-secondary btn-sm">Categories</a>
+            <a href="customers.html" class="btn btn-outline-secondary btn-sm">Customers</a>
+        </div>
+    </div>
+
+    <p class="lead">Track customer orders, update status, and manage shipments.</p>
+
+    <!-- search row status and address -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-5">
+            <div class="card card-custom h-100">
+                <div class="card-header bg-white fw-bold"><i class="bi bi-search"></i> Search by status</div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text" id="searchStatus" class="form-control" placeholder="e.g. Shipped, Pending...">
+                        <button id="searchButton" class="btn btn-success">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card card-custom h-100">
+                <div class="card-header bg-white fw-bold"><i class="bi bi-geo-alt"></i> Search by address</div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text" id="searchAddress" class="form-control" placeholder="Shipping address contains...">
+                        <button id="searchAddressButton" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button id="showAllButton" class="btn btn-outline-secondary w-100"><i class="bi bi-arrow-repeat"></i> Show all</button>
+        </div>
+    </div>
+
+    <!-- order form -->
+    <div class="card card-custom mb-4">
+        <div class="card-header bg-white fw-bold"><i class="bi bi-pencil-square"></i> Order form</div>
+        <div class="card-body">
+            <input type="hidden" id="orderId">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Order status</label>
+                    <select id="orderStatus" class="form-select">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Refunded">Refunded</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Shipping address</label>
+                    <input type="text" id="shippingAddress" class="form-control" placeholder="Street, city, zip">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Customer</label>
+                    <select id="customerId" class="form-select"></select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Product</label>
+                    <select id="productId" class="form-select"></select>
+                </div>
+                <div class="col-md-12 d-flex gap-2 mt-2">
+                    <button id="saveButton" class="btn btn-success"><i class="bi bi-save"></i> Save order</button>
+                    <button id="clearButton" class="btn btn-outline-secondary">Clear form</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- orders table -->
+    <div class="card card-custom">
+        <div class="card-header bg-white fw-bold"><i class="bi bi-table"></i> Order list</div>
+        <div class="card-body">
+            <div id="result" class="table-responsive">
+                <div class="text-center py-5"><div class="spinner-border text-success"></div> Loading orders...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- toast contgainer -->
+<div class="toast-container"></div>
+
+<script>
+    const API_BASE = "http://localhost:8080/api";
+
+    // toast popup helper
+    function showToast(message, type = 'success') {
+        const toastHtml = `<div class="toast align-items-center text-white bg-${type} border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
+            <div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
+        </div>`;
+        $('.toast-container').append(toastHtml);
+        const toastEl = $('.toast-container .toast').last();
+        const bsToast = new bootstrap.Toast(toastEl[0], { delay: 3000 });
+        bsToast.show();
+        toastEl.on('hidden.bs.toast', function() { $(this).remove(); });
+    }
+
+    // load customer and product for dropdown menu
+    function loadCustomers() {
+        $.get(API_BASE + "/customers", function(data) {
+            let options = '<option value="">– Select customer –</option>';
+            data.forEach(c => {
+                options += `<option value="${c.id}">${c.firstName} ${c.lastName} (${c.email})</option>`;
+            });
+            $("#customerId").html(options);
+        }).fail(() => showToast("Failed to load customers", "danger"));
+    }
+
+    function loadProducts() {
+        $.get(API_BASE + "/products", function(data) {
+            let options = '<option value="">– Select product –</option>';
+            data.forEach(p => {
+                options += `<option value="${p.productId}">${p.name} ($${p.price})</option>`;
+            });
+            $("#productId").html(options);
+        }).fail(() => showToast("Failed to load products", "danger"));
+    }
+
+    // displays orders in bootsstrap table
+    function showOrders(orders) {
+        if (!orders || orders.length === 0) {
+            $("#result").html('<div class="alert alert-info">No orders found. Create your first order!</div>');
+            return;
+        }
+        let html = `<table class="table table-striped table-hover align-middle">
+            <thead class="table-success"><tr>
+                <th>ID</th><th>Status</th><th>Shipping address</th><th>Customer</th><th>Product</th><th>Actions</th>
+            </thead><tbody>`;
+        orders.forEach(order => {
+            const customerName = order.customer ? `${order.customer.firstName} ${order.customer.lastName}` : '-';
+            const productName = order.product ? order.product.name : '-';
+            html += `<tr>
+                <td>${order.orderId}</td>
+                <td><span class="badge bg-secondary">${order.orderStatus}</span></td>
+                <td>${order.shippingAddress}</td>
+                <td>${customerName}</td>
+                <td>${productName}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary btn-action" onclick="editOrder(${order.orderId})"><i class="bi bi-pencil"></i> Edit</button>
+                    <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteOrder(${order.orderId})"><i class="bi bi-trash"></i> Delete</button>
+                </td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+        $("#result").html(html);
+    }
+
+    // API calls
+    function getAllOrders() {
+        $("#result").html('<div class="text-center py-5"><div class="spinner-border text-success"></div> Loading orders...</div>');
+        $.get(API_BASE + "/order")
+            .done(data => { showOrders(data); showToast(`Loaded ${data.length} orders`, 'success'); })
+            .fail(() => showToast("Failed to load orders", "danger"));
+    }
+
+    function searchOrderByStatus() {
+        const status = $("#searchStatus").val().trim();
+        if (!status) { showToast("Please enter a status", "danger"); return; }
+        $("#result").html('<div class="text-center py-5"><div class="spinner-border text-success"></div> Searching...</div>');
+        $.get(API_BASE + "/order/search?status=" + encodeURIComponent(status))
+            .done(data => { showOrders(data); showToast(`Found ${data.length} order(s)`, 'success'); })
+            .fail(() => showToast("Search failed", "danger"));
+    }
+
+    function searchOrderByAddress() {
+        const address = $("#searchAddress").val().trim();
+        if (!address) { showToast("Please enter an address", "danger"); return; }
+        $("#result").html('<div class="text-center py-5"><div class="spinner-border text-success"></div> Searching...</div>');
+        $.get(API_BASE + "/order/searchbyaddress?address=" + encodeURIComponent(address))
+            .done(data => { showOrders(data); showToast(`Found ${data.length} order(s)`, 'success'); })
+            .fail(() => showToast("Search failed", "danger"));
+    }
+
+    function saveOrder() {
+        const orderId = $("#orderId").val();
+        const status = $("#orderStatus").val();
+        const address = $("#shippingAddress").val().trim();
+        const customerId = $("#customerId").val();
+        const productId = $("#productId").val();
+
+        if (!status || !address || !customerId || !productId) {
+            showToast("Please fill all fields (status, address, customer, product)", "danger");
+            return;
+        }
+
+        const orderData = {
+            orderStatus: status,
+            shippingAddress: address,
+            customer: { id: parseInt(customerId) },
+            product: { productId: parseInt(productId) }
+        };
+
+        if (orderId === "") {
+            // Create
+            $.ajax({
+                url: API_BASE + "/order",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(orderData),
+                success: () => {
+                    clearOrderInfo();
+                    showToast("Order added successfully", "success");
+                    getAllOrders();
+                },
+                error: () => showToast("Failed to create order", "danger")
+            });
+        } else {
+            // Update (only status as per your backend)
+            $.ajax({
+                url: API_BASE + "/order/" + orderId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({ orderStatus: status }),
+                success: () => {
+                    clearOrderInfo();
+                    showToast("Order updated", "success");
+                    getAllOrders();
+                },
+                error: () => showToast("Failed to update order", "danger")
+            });
+        }
+    }
+
+    function editOrder(id) {
+        $.get(API_BASE + "/order/" + id)
+            .done(data => {
+                $("#orderId").val(data.orderId);
+                $("#orderStatus").val(data.orderStatus);
+                $("#shippingAddress").val(data.shippingAddress);
+                if (data.customer) $("#customerId").val(data.customer.id);
+                if (data.product) $("#productId").val(data.product.productId);
+                showToast(`Editing order #${data.orderId}`, 'info');
+            })
+            .fail(() => showToast("Could not load order details", "danger"));
+    }
+
+    function deleteOrder(id) {
+        if (!confirm("Delete this order permanently?")) return;
+        $.ajax({
+            url: API_BASE + "/order/" + id,
+            type: "DELETE",
+            success: () => {
+                clearOrderInfo();
+                showToast("Order deleted", "success");
+                getAllOrders();
+            },
+            error: () => showToast("Delete failed", "danger")
+        });
+    }
+
+    function clearOrderInfo() {
+        $("#orderId").val("");
+        $("#orderStatus").val("Pending");
+        $("#shippingAddress").val("");
+        $("#customerId").val("");
+        $("#productId").val("");
+        showToast("Form cleared", "info");
+    }
+
+    // event bind
+    $("#searchButton").click(searchOrderByStatus);
+    $("#searchAddressButton").click(searchOrderByAddress);
+    $("#showAllButton").click(getAllOrders);
+    $("#saveButton").click(saveOrder);
+    $("#clearButton").click(clearOrderInfo);
+    $("#searchStatus, #searchAddress").keypress(e => { if (e.which === 13) e.target.id === 'searchStatus' ? searchOrderByStatus() : searchOrderByAddress(); });
+
+    // initial load
+    loadCustomers();
+    loadProducts();
+    getAllOrders();
+</script>
+</body>
+</html>

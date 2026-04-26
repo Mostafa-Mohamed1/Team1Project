@@ -1,11 +1,12 @@
-package org.example.esouq.controllers;
+/*package org.example.esouq.controllers;
 
 import org.example.esouq.ESouqService;
 import org.example.esouq.model.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;*/
 
+/*
 @Controller
 public class MainController {
 
@@ -64,4 +65,4 @@ public class MainController {
         model.addAttribute("products", eSouqService.getProducts());
         return "add-order";
     }
-}
+}*/
