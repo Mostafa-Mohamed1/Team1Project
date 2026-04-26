@@ -93,7 +93,7 @@
             customersData = customersRes[0];
             ordersData = ordersRes[0];
 
-            updateStatsAndChart();
+            updateStats();
             renderFeatured();
             showToast(`Ready – ${productsData.length} products, ${customersData.length} customers`, "success");
         }).fail(function() {
@@ -102,22 +102,11 @@
         });
     }
 
-    function updateStatsAndChart() {
+    function updateStats() {
         $('#productCount').text(productsData.length);
         $('#categoryCount').text(categoriesData.length);
         $('#customerCount').text(customersData.length);
         $('#orderCount').text(ordersData.length);
-
-        if (chart) chart.destroy();
-        const ctx = document.getElementById('statsChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Products', 'Categories', 'Customers', 'Orders'],
-                datasets: [{ label: 'Count', data: [productsData.length, categoriesData.length, customersData.length, ordersData.length], backgroundColor: '#2e7d32' }]
-            },
-            options: { responsive: true, maintainAspectRatio: true }
-        });
     }
 
     function renderFeatured() {
