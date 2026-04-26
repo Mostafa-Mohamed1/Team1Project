@@ -5,21 +5,22 @@ import jakarta.persistence.*;
 @Table(name = "products")
 public class Product {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "Product_ID")
-        private Long productId;
+    public Product() {}
 
-        @Column(name = "Name", length = 30, nullable = false)
-        private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Product_ID")
+    private Long productId;
 
-        @Column(name = "Price", nullable = false)
-        private double price;
+    @Column(name = "Name", length = 30, nullable = false)
+    private String name;
 
-        @ManyToOne
-        @JoinColumn(name = "category_id")   // FK for products table
-        private Category category;
+    @Column(name = "Price", nullable = false)
+    private double price;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")   // FK for products table
+    private Category category;
 
     public Product(String name, double price, Category category) {
         this.name = name;
