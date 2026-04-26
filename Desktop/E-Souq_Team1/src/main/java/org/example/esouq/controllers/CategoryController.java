@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+//Bechir Zaied
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {

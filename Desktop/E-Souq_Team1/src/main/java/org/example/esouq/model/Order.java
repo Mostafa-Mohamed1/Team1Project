@@ -1,5 +1,6 @@
 package org.example.esouq.model;
 
+//Mahmoud Alazzeh
 import jakarta.persistence.*;
 
 @Entity

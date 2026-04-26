@@ -1,6 +1,7 @@
 package org.example.esouq.model;
 import jakarta.persistence.*;
 
+//Mustafa Mohammed
 @Entity
 @Table(name = "products")
 public class Product {
