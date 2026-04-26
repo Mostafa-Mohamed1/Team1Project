@@ -3,87 +3,65 @@ package org.example.esouq.controllers;
 import org.example.esouq.model.Product;
 import org.example.esouq.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/products")
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = this.productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    // get all
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
-    @GetMapping("/products/{id}")
+    // get product by its id
+    @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.getProductById(id);
 
-        if (product.isPresent())
-            return new ResponseEntity<>(product.get(), HttpStatus.OK);
-        else
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (product.isPresent()) {  // Check if value exists inside Optional
+            return ResponseEntity.ok(product.get());  // .get() extracts the Product
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/products/search")
-    public ResponseEntity<List<Product>> getProductsByName(@RequestParam String name) {
-        List<Product> products = this.productService.getProductsByName(name);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    // get product by name
+    @GetMapping("/search")
+    public List<Product> getProductsByName(@RequestParam String name) {
+        return productService.getProductsByName(name);
     }
 
-    @GetMapping("/products/add")
-    public Product addProduct(Product product) {
-        return this.productService.saveProduct(product);
-    }
-
-    @GetMapping("/products/update")
-    public Product updateProduct2(Product product) {
-        return this.productService.updateById(product.getProductId(), product);
-    }
-
-    @GetMapping("/products/delete")
-    public void deleteProduct(@RequestParam Long id) {
-        this.productService.deleteProductById(id);
-    }
-
-    @PostMapping("/product")
+    // create new product
+    @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        try {
-            Product productSave = productService.saveProduct(product);
-            return new ResponseEntity<>(productSave, HttpStatus.CREATED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>((HttpHeaders) null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Product savedProduct = productService.saveProduct(product);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
-    @PostMapping("/product/{id}")
+    // update existing product
+    @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        try {
-            Product productUpdate = this.productService.updateById(id, product);
-            return new ResponseEntity<>(productUpdate, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>((HttpHeaders) null, HttpStatus.INTERNAL_SERVER_ERROR);
+        Product updatedProduct = productService.updateById(id, product);
+        if (updatedProduct != null) {
+            return ResponseEntity.ok(updatedProduct);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping("/product/delete/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
-        try {
-            this.productService.deleteProductById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>((HttpHeaders) null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    // remove a product
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProductById(id);
+        return ResponseEntity.noContent().build();
     }
 }
