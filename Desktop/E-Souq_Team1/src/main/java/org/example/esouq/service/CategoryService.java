@@ -29,9 +29,15 @@ public class CategoryService {
         categoryDAO.save(category);
     }
 
-    public void updateCategory(int id, Category updatedCategory) {
+    public Category updateCategory(int id, Category updatedCategory) {
         updatedCategory.setCategoryId(id);
-        categoryDAO.save(updatedCategory);  //.save() updates if id already exist in obj
+
+        int rowsUpdated = categoryDAO.updateCategoryById(id, updatedCategory.getCategoryName(), updatedCategory.getCategoryDescription());
+
+        if (rowsUpdated > 0) {
+            return categoryDAO.findById(id).orElse(null);
+        }
+        return null;
     }
 
     public void deleteCategory(int id) {

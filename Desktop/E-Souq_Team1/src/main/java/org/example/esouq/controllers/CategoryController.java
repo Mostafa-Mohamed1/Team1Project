@@ -27,7 +27,7 @@ public class CategoryController {
 
     // (search by category feature)
     @GetMapping("/search")
-    public List<Category> searchCategoriesByName(String name){
+    public List<Category> searchCategoriesByName(@RequestParam String name){
         return categoryService.searchCategoriesByName(name);
     }
 
@@ -41,8 +41,7 @@ public class CategoryController {
     //updates existing category
     @PutMapping("/{id}")
     public Category updateCategory(@PathVariable int id, @RequestBody Category category){
-        categoryService.updateCategory(id, category);
-        return category;
+        return categoryService.updateCategory(id, category);
     }
 
     //deletes a category
