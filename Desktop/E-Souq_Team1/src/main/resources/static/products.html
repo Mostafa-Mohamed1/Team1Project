@@ -20,7 +20,7 @@
 <body>
 
 <div class="page">
-    <!-- Header & navigation -->
+    <!-- header and nav -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-success"><i class="bi bi-box-seam"></i> Products</h1>
         <div>
@@ -33,7 +33,7 @@
 
     <p class="lead">Manage your electronic products: add, edit, search, and delete.</p>
 
-    <!-- Search section -->
+    <!-- search bar -->
     <div class="card card-custom mb-4">
         <div class="card-header bg-white fw-bold"><i class="bi bi-search"></i> Search product</div>
         <div class="card-body">
@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    <!-- Product form -->
+    <!-- product form -->
     <div class="card card-custom mb-4">
         <div class="card-header bg-white fw-bold"><i class="bi bi-pencil-square"></i> Product form</div>
         <div class="card-body">
@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <!-- Products table -->
+    <!-- products table -->
     <div class="card card-custom">
         <div class="card-header bg-white fw-bold"><i class="bi bi-table"></i> Product inventory</div>
         <div class="card-body">
@@ -86,14 +86,14 @@
     </div>
 </div>
 
-<!-- Toast container -->
+<!-- toast container -->
 <div class="toast-container"></div>
 
 <script>
     const API_BASE = "http://localhost:8080/api";
     let categoriesList = [];
 
-    // Helper: toast notifications
+    // helper for toast notifications
     function showToast(message, type = 'success') {
         const toastHtml = `<div class="toast align-items-center text-white bg-${type} border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
             <div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
@@ -105,14 +105,7 @@
         toastEl.on('hidden.bs.toast', function() { $(this).remove(); });
     }
 
-    // Show inline message (for backward compatibility)
-    function showMessage(msg, isError = false) {
-        // optional: you could also show a toast
-        if (isError) showToast(msg, 'danger');
-        else showToast(msg, 'success');
-    }
-
-    // Fetch categories for dropdown
+    // fetch dropdown categories
     async function fetchCategories() {
         try {
             const res = await fetch(`${API_BASE}/categories`);
@@ -133,7 +126,7 @@
         });
     }
 
-    // Fetch all products
+    // fetch all produicts
     async function fetchAllProducts() {
         try {
             const res = await fetch(`${API_BASE}/products`);
@@ -182,10 +175,10 @@
         return true;
     }
 
-    // Display products as Bootstrap table
+    // display products as bootstrap table
     function displayProducts(products) {
         if (!products || products.length === 0) {
-            $("#result").html('<div class="alert alert-info">No products found. Add your first product!</div>');
+            $("#result").html('<div class="alert alert-info">No products found. Please add a product</div>');
             return;
         }
         let html = `<table class="table table-striped table-hover align-middle">
@@ -309,14 +302,14 @@
         }
     }
 
-    // Event binding
+    // event binding
     $("#searchButton").click(searchByName);
     $("#showAllButton").click(loadAllProducts);
     $("#saveButton").click(saveProduct);
     $("#clearButton").click(clearProductForm);
     $("#searchName").keypress(e => { if (e.which === 13) searchByName(); });
 
-    // Initial load
+    // initial load
     loadAllProducts();
 
     function escapeHtml(str) {

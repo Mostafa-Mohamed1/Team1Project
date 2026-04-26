@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>E‑Souq | Electronics Marketplace</title>
-    <!-- Bootstrap 5 + Icons + Chart.js -->
+    <!-- bootstrap 5 icons and charsts-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -22,7 +22,7 @@
 <body>
 
 <div class="container py-3">
-    <!-- Hero section -->
+    <!-- hero section -->
     <div class="hero text-center">
         <h1 class="display-4 fw-bold"><i class="bi bi-shop"></i> E‑Souq</h1>
         <p class="lead">The smartest place to buy & sell electronics & manage inventory, customers, orders</p>
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <!-- Real-time stats -->
+    <!-- rts -->
     <div class="row g-4 mb-5" id="statsRow">
         <div class="col-md-3"><div class="card stat-card shadow-sm"><div class="card-body"><h5><i class="bi bi-box-seam"></i> Products</h5><h2 id="productCount" class="text-success">—</h2></div></div></div>
         <div class="col-md-3"><div class="card stat-card shadow-sm"><div class="card-body"><h5><i class="bi bi-tags"></i> Categories</h5><h2 id="categoryCount" class="text-success">—</h2></div></div></div>
@@ -42,7 +42,7 @@
         <div class="col-md-3"><div class="card stat-card shadow-sm"><div class="card-body"><h5><i class="bi bi-truck"></i> Orders</h5><h2 id="orderCount" class="text-success">—</h2></div></div></div>
     </div>
 
-    <!-- Dashboard chart & quick actions -->
+    <!-- dashboard chart and quick actions -->
     <div class="row g-4 mb-5">
         <div class="col-md-6">
             <div class="card shadow-sm h-100">
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <!-- Featured products section -->
+    <!-- featured products -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-star-fill text-warning"></i> Featured Electronics</h5></div>
         <div class="card-body" id="featuredProducts">
@@ -77,7 +77,7 @@
     </footer>
 </div>
 
-<!-- Toast container -->
+<!-- toast popup container -->
 <div class="toast-container"></div>
 
 <script>
@@ -85,7 +85,7 @@
     let productsData = [], categoriesData = [], customersData = [], ordersData = [];
     let chart = null;
 
-    // Toast helper
+    // toast popup helper
     function showToast(message, type = 'success') {
         const toastHtml = `<div class="toast align-items-center text-white bg-${type} border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
             <div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
@@ -97,7 +97,7 @@
         toastEl.on('hidden.bs.toast', function() { $(this).remove(); });
     }
 
-    // API fetch with error fallback
+    // fetch with error handling
     async function fetchData(url) {
         try {
             const res = await fetch(url);
@@ -173,7 +173,7 @@
         });
     }
 
-    // Initial load with connection status
+    // initial load state
     async function init() {
         showToast("Connecting to E‑Souq server...", "info");
         await refreshAll();

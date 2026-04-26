@@ -20,7 +20,7 @@
 <body>
 
 <div class="page">
-    <!-- Header & navigation -->
+    <!-- header and nav -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-success"><i class="bi bi-truck"></i> Orders</h1>
         <div>
@@ -33,7 +33,7 @@
 
     <p class="lead">Track customer orders, update status, and manage shipments.</p>
 
-    <!-- Search row (status + address) -->
+    <!-- search row status and address -->
     <div class="row g-3 mb-4">
         <div class="col-md-5">
             <div class="card card-custom h-100">
@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <!-- Order form -->
+    <!-- order form -->
     <div class="card card-custom mb-4">
         <div class="card-header bg-white fw-bold"><i class="bi bi-pencil-square"></i> Order form</div>
         <div class="card-body">
@@ -100,7 +100,7 @@
         </div>
     </div>
 
-    <!-- Orders table -->
+    <!-- orders table -->
     <div class="card card-custom">
         <div class="card-header bg-white fw-bold"><i class="bi bi-table"></i> Order list</div>
         <div class="card-body">
@@ -111,13 +111,13 @@
     </div>
 </div>
 
-<!-- Toast container -->
+<!-- toast contgainer -->
 <div class="toast-container"></div>
 
 <script>
     const API_BASE = "http://localhost:8080/api";
 
-    // Toast helper
+    // toast popup helper
     function showToast(message, type = 'success') {
         const toastHtml = `<div class="toast align-items-center text-white bg-${type} border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
             <div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
@@ -129,13 +129,7 @@
         toastEl.on('hidden.bs.toast', function() { $(this).remove(); });
     }
 
-    // Helper escape
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-    }
-
-    // Load customers and products for dropdowns
+    // load customer and product for dropdown menu
     function loadCustomers() {
         $.get(API_BASE + "/customers", function(data) {
             let options = '<option value="">– Select customer –</option>';
@@ -156,7 +150,7 @@
         }).fail(() => showToast("Failed to load products", "danger"));
     }
 
-    // Display orders in Bootstrap table
+    // displays orders in bootsstrap table
     function showOrders(orders) {
         if (!orders || orders.length === 0) {
             $("#result").html('<div class="alert alert-info">No orders found. Create your first order!</div>');
@@ -297,7 +291,7 @@
         showToast("Form cleared", "info");
     }
 
-    // Event binding
+    // event bind
     $("#searchButton").click(searchOrderByStatus);
     $("#searchAddressButton").click(searchOrderByAddress);
     $("#showAllButton").click(getAllOrders);
@@ -305,7 +299,7 @@
     $("#clearButton").click(clearOrderInfo);
     $("#searchStatus, #searchAddress").keypress(e => { if (e.which === 13) e.target.id === 'searchStatus' ? searchOrderByStatus() : searchOrderByAddress(); });
 
-    // Initial load
+    // initial load
     loadCustomers();
     loadProducts();
     getAllOrders();
