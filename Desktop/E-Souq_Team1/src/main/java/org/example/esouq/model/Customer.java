@@ -26,7 +26,6 @@ public class Customer {
     private List<Order> orders;
 
     // getters
-
     public int getId() {return id;}
     public String getFirstName() {return firstName;}
     public String getLastName() {return lastName;}
@@ -34,7 +33,6 @@ public class Customer {
     public List<Order> getOrders() {return orders;}
 
     // setters
-
     public void setId(int id) {this.id = id;}
     public void setFirstName(String firstName) {this.firstName = firstName;}
     public void setLastName(String lastName) {this.lastName = lastName;}
