@@ -2,5 +2,22 @@ Mostafa Mohamed 770000404
 Mahmoud Alazzeh 750003393
 Bechir Ben Zaied 764003678
 
-E-Souq is essentially a web application that allows users to list
-electronic products for sale and make purchases as well
+E-souq is a full stack web application that serves as an online marketplace selling electronic products.
+The platform allows users to list, browse, and purchase electronic items.
+E-souq delivers a functional & modern shopping experience.
+
+
+
+# Backend Implementation:
+JAVA 17 - Language Used
+Spring Boot v3 - Application Structure
+Spring Data JPA - Database Persistence
+Spring MVC - REST API controller integration
+MariaDB - Relational database implementation
+Maven - Dependency management
+
+# Frontend Implementation:
+HTML5 - Page structure
+CSS + SemanticUI - Page styling and responsiveness
+JavaScript - Dynamic buttons & views
+Fetch API - REST API consumption

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
+// Bechir Ben Zaied
+
 @Entity
 @Table(name = "customers")
 public class Customer {

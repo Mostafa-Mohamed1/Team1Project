@@ -2,6 +2,7 @@ package org.example.esouq.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+// Bechir Ben Zaied
 
 @Entity
 @Table(name= "categories")
