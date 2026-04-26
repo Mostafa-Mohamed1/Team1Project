@@ -122,7 +122,7 @@
         select.html('<option value="">– Select category –</option>');
         categoriesList.forEach(cat => {
             const selected = (selectedId && cat.categoryId == selectedId) ? 'selected' : '';
-            select.append(`<option value="${cat.categoryId}" ${selected}>${escapeHtml(cat.categoryName)}</option>`);
+            select.append(`<option value="${cat.categoryId}" ${selected}>${cat.categoryName}</option>`);
         });
     }
 
@@ -189,9 +189,9 @@
             const categoryName = p.category ? p.category.categoryName : 'Uncategorized';
             html += `<tr>
                 <td>${p.productId}</td>
-                <td>${escapeHtml(p.name)}</td>
+                <td>${p.name}</td>
                 <td>$${parseFloat(p.price).toFixed(2)}</td>
-                <td>${escapeHtml(categoryName)}</td>
+                <td>${categoryName}</td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary btn-action" onclick="editProduct(${p.productId})"><i class="bi bi-pencil"></i> Edit</button>
                     <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteProductById(${p.productId})"><i class="bi bi-trash"></i> Delete</button>
@@ -311,11 +311,6 @@
 
     // initial load
     loadAllProducts();
-
-    function escapeHtml(str) {
-        if (!str) return "";
-        return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-    }
 </script>
 </body>
 </html>

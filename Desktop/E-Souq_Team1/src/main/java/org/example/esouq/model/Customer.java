@@ -1,5 +1,6 @@
 package org.example.esouq.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class Customer {
     @Column(length = 50, nullable = false)
     private String email;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customer")
     private List<Order> orders;
 

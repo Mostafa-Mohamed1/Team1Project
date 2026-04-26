@@ -134,7 +134,7 @@
         $.get(API_BASE + "/customers", function(data) {
             let options = '<option value="">– Select customer –</option>';
             data.forEach(c => {
-                options += `<option value="${c.id}">${escapeHtml(c.firstName)} ${escapeHtml(c.lastName)} (${escapeHtml(c.email)})</option>`;
+                options += `<option value="${c.id}">${c.firstName} ${c.lastName} (${c.email})</option>`;
             });
             $("#customerId").html(options);
         }).fail(() => showToast("Failed to load customers", "danger"));
@@ -144,7 +144,7 @@
         $.get(API_BASE + "/products", function(data) {
             let options = '<option value="">– Select product –</option>';
             data.forEach(p => {
-                options += `<option value="${p.productId}">${escapeHtml(p.name)} ($${p.price})</option>`;
+                options += `<option value="${p.productId}">${p.name} ($${p.price})</option>`;
             });
             $("#productId").html(options);
         }).fail(() => showToast("Failed to load products", "danger"));
@@ -165,10 +165,10 @@
             const productName = order.product ? order.product.name : '-';
             html += `<tr>
                 <td>${order.orderId}</td>
-                <td><span class="badge bg-secondary">${escapeHtml(order.orderStatus)}</span></td>
-                <td>${escapeHtml(order.shippingAddress)}</td>
-                <td>${escapeHtml(customerName)}</td>
-                <td>${escapeHtml(productName)}</td>
+                <td><span class="badge bg-secondary">${order.orderStatus}</span></td>
+                <td>${order.shippingAddress}</td>
+                <td>${customerName}</td>
+                <td>${productName}</td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary btn-action" onclick="editOrder(${order.orderId})"><i class="bi bi-pencil"></i> Edit</button>
                     <button class="btn btn-sm btn-outline-danger btn-action" onclick="deleteOrder(${order.orderId})"><i class="bi bi-trash"></i> Delete</button>

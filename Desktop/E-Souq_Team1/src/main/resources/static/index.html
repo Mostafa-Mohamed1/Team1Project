@@ -42,28 +42,6 @@
         <div class="col-md-3"><div class="card stat-card shadow-sm"><div class="card-body"><h5><i class="bi bi-truck"></i> Orders</h5><h2 id="orderCount" class="text-success">—</h2></div></div></div>
     </div>
 
-    <!-- dashboard chart and quick actions -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-bar-chart-steps"></i> Marketplace Overview</h5></div>
-                <div class="card-body">
-                    <canvas id="statsChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Quick Actions</h5></div>
-                <div class="card-body d-flex flex-column gap-3">
-                    <a href="products.html" class="btn btn-outline-success"><i class="bi bi-plus-circle"></i> Add new product</a>
-                    <a href="orders.html" class="btn btn-outline-primary"><i class="bi bi-cart"></i> Process orders</a>
-                    <a href="customers.html" class="btn btn-outline-info"><i class="bi bi-person-plus"></i> Register customer</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- featured products -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-star-fill text-warning"></i> Featured Electronics</h5></div>
@@ -80,6 +58,7 @@
 <!-- toast popup container -->
 <div class="toast-container"></div>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     const API_BASE = "http://localhost:8080/api";
     let productsData = [], categoriesData = [], customersData = [], ordersData = [];
@@ -97,27 +76,30 @@
         toastEl.on('hidden.bs.toast', function() { $(this).remove(); });
     }
 
-    // fetch with error handling
-    async function fetchData(url) {
-        try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        } catch (err) {
-            console.error(`Failed ${url}`, err);
-            return [];
-        }
-    }
+    // load data using jQuery AJAX (same as your other working pages)
+    function loadAllData() {
+        // Show loading spinners
+        $("#featuredProducts").html('<div class="text-center py-4"><div class="spinner-border text-success"></div> Loading products...</div>');
 
-    async function refreshAll() {
-        [productsData, categoriesData, customersData, ordersData] = await Promise.all([
-            fetchData(`${API_BASE}/products`),
-            fetchData(`${API_BASE}/categories`),
-            fetchData(`${API_BASE}/customers`),
-            fetchData(`${API_BASE}/order`)
-        ]);
-        updateStatsAndChart();
-        renderFeatured();
+        // Fetch all endpoints in parallel
+        $.when(
+            $.get(API_BASE + "/products"),
+            $.get(API_BASE + "/categories"),
+            $.get(API_BASE + "/customers"),
+            $.get(API_BASE + "/order")
+        ).done(function(productsRes, categoriesRes, customersRes, ordersRes) {
+            productsData = productsRes[0];
+            categoriesData = categoriesRes[0];
+            customersData = customersRes[0];
+            ordersData = ordersRes[0];
+
+            updateStatsAndChart();
+            renderFeatured();
+            showToast(`Ready – ${productsData.length} products, ${customersData.length} customers`, "success");
+        }).fail(function() {
+            showToast("Cannot reach backend. Is Spring Boot running on port 8080?", "danger");
+            $("#featuredProducts").html('<p class="text-muted">Unable to load data. Please refresh.</p>');
+        });
     }
 
     function updateStatsAndChart() {
@@ -125,6 +107,7 @@
         $('#categoryCount').text(categoriesData.length);
         $('#customerCount').text(customersData.length);
         $('#orderCount').text(ordersData.length);
+
         if (chart) chart.destroy();
         const ctx = document.getElementById('statsChart').getContext('2d');
         chart = new Chart(ctx, {
@@ -149,9 +132,9 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="card product-card h-100">
                         <div class="card-body">
-                            <h6 class="card-title">${escapeHtml(p.name)}</h6>
+                            <h6 class="card-title">${p.name}</h6>
                             <p class="text-success fw-bold fs-5">$${p.price}</p>
-                            <small class="text-muted">${p.category ? escapeHtml(p.category.categoryName) : 'Uncategorized'}</small>
+                            <small class="text-muted">${p.category ? p.category.categoryName : 'Uncategorized'}</small>
                             <div class="mt-2">
                                 <a href="products.html" class="btn btn-sm btn-outline-success">View</a>
                             </div>
@@ -163,29 +146,9 @@
         container.html(html);
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    // initial load state
-    async function init() {
-        showToast("Connecting to E‑Souq server...", "info");
-        await refreshAll();
-        if (productsData.length === 0 && customersData.length === 0) {
-            showToast("Cannot reach backend. Is Spring Boot running on port 8080?", "danger");
-        } else {
-            showToast(`Ready – ${productsData.length} products, ${customersData.length} customers`, "success");
-        }
-        setInterval(refreshAll, 30000); // refresh every 30s
-    }
-
-    init();
+    // initial load and auto-refresh every 30 seconds
+    loadAllData();
+    setInterval(loadAllData, 30000);
 </script>
 </body>
 </html>

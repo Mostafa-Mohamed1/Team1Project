@@ -1,4 +1,5 @@
 package org.example.esouq.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class Category {
     @Column(length = 150, nullable = true)
     private String categoryDescription;
 
+    @JsonIgnore     //took forever
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 
