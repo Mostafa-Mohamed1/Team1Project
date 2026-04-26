@@ -1,0 +1,308 @@
+<!--Order HTML:-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+            background-color: whitesmoke;
+            color: black;
+        }
+
+        .page {
+            width: 900px;
+            max-width: 92%;
+            margin: auto;
+            padding: 10px 0 20px 0;
+        }
+
+        a {
+            color: darkgreen;
+        }
+
+        .box {
+            margin-top: 15px;
+        }
+
+        h1, h3 {
+            color: darkgreen;
+        }
+
+        input, button, select {
+            margin: 8px 8px 8px 0;
+        }
+
+        input, select {
+            width: 220px;
+        }
+
+        #message {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="ui container page">
+    <h1 class="ui green header">Orders</h1>
+
+    <p>
+        <a href="index.html">Home</a> |
+        <a href="orders.html">Orders</a>
+    </p>
+
+    <p>This page lets you search, add, edit, and delete orders.</p>
+
+    <div class="ui raised segment form box">
+        <h3 class="ui green header">Search by status</h3>
+        <input type="text" id="searchStatus" placeholder="Enter order status">
+        <button id="searchButton" class="ui green button">Search</button>
+    </div>
+
+    <div class="ui raised segment form box">
+        <h3 class="ui green header">Search by id</h3>
+        <input type="number" id="searchId" placeholder="Enter order id">
+        <button id="searchIdButton" class="ui blue button">Search By ID</button>
+        <button id="showAllButton" class="ui teal button">Show All</button>
+    </div>
+
+    <div class="ui raised segment form box">
+        <h3 class="ui green header">Order form</h3>
+        <input type="hidden" id="orderId">
+        <div>Order status</div>
+        <select id="orderStatus">
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Out for Delivery">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Refunded">Refunded</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+        <div>Shipping address</div>
+        <input type="text" id="shippingAddress" placeholder="Enter shipping address">
+        <div>Customer</div>
+        <select id="customerId"></select>
+        <div>Product</div>
+        <select id="productId"></select>
+        <br>
+        <button id="saveButton" class="ui green button">Save</button>
+        <button id="clearButton" class="ui basic button">Clear</button>
+    </div>
+
+    <div class="ui raised segment box">
+        <h3 class="ui green header">Message</h3>
+        <div id="message" class="ui info message">Page ready</div>
+    </div>
+
+    <div class="ui raised segment box">
+        <h3 class="ui green header">Order List</h3>
+        <div id="result"></div>
+    </div>
+</div>
+
+<script>
+    function clearOrderInfo() {
+        $("#orderId").val("");
+        $("#orderStatus").val("Pending");
+        $("#shippingAddress").val("");
+        $("#message").html("Form cleared");
+    }
+
+    function showOrders(data) {
+        var htmlTable = "<table class='ui celled striped table'>";
+        htmlTable += "<tr>";
+        htmlTable += "<th>ID</th>";
+        htmlTable += "<th>Status</th>";
+        htmlTable += "<th>Shipping Address</th>";
+        htmlTable += "<th>Customer</th>";
+        htmlTable += "<th>Product</th>";
+        htmlTable += "<th>Actions</th>";
+        htmlTable += "</tr>";
+
+        for (var i = 0; i < data.length; i++) {
+            var line = data[i];
+            var customerName = line.customer ? line.customer.firstName + " " + line.customer.lastName : "-";
+            var productName = line.product ? line.product.name : "-";
+
+            htmlTable += "<tr>";
+            htmlTable += "<td>" + line.orderId + "</td>";
+            htmlTable += "<td>" + line.orderStatus + "</td>";
+            htmlTable += "<td>" + line.shippingAddress + "</td>";
+            htmlTable += "<td>" + customerName + "</td>";
+            htmlTable += "<td>" + productName + "</td>";
+            htmlTable += "<td>";
+            htmlTable += "<button class='ui tiny blue button' onclick='editOrder(" + line.orderId + ")'>Edit</button> ";
+            htmlTable += "<button class='ui tiny red button' onclick='deleteOrder(" + line.orderId + ")'>Delete</button>";
+            htmlTable += "</td>";
+            htmlTable += "</tr>";
+        }
+
+        htmlTable += "</table>";
+        $("#result").html(htmlTable);
+    }
+
+    function getAllOrders() {
+        var apiURL = "/api/orders";
+        $.get(apiURL, function(data) {
+            if (data.length === 0) {
+                $("#message").html("No orders found");
+                $("#result").html("");
+            } else {
+                $("#message").html("All orders loaded");
+                showOrders(data);
+            }
+        });
+    }
+
+    function searchOrderByStatus() {
+        var status = $("#searchStatus").val();
+        var apiURL = "/api/orders/search?status=" + status;
+
+        if (status === "") {
+            $("#message").html("Please enter a status");
+            return;
+        }
+
+        $.get(apiURL, function(data) {
+            if (data.length === 0) {
+                $("#message").html("No orders found");
+                $("#result").html("");
+            } else {
+                $("#message").html("Search completed");
+                showOrders(data);
+            }
+        });
+    }
+
+    function searchOrderById() {
+        var id = $("#searchId").val();
+        var apiURL = "/api/orders/" + id;
+
+        if (id === "") {
+            $("#message").html("Please enter an order id");
+            return;
+        }
+
+        $.get(apiURL, function(data) {
+            var orders = [];
+            orders.push(data);
+            $("#message").html("Search completed");
+            showOrders(orders);
+        }).fail(function() {
+            $("#message").html("No order found");
+            $("#result").html("");
+        });
+    }
+
+    function loadCustomers() {
+        $.get("/api/customers", function(data) {
+            var options = "";
+            for (var i = 0; i < data.length; i++) {
+                options += "<option value='" + data[i].id + "'>" + data[i].firstName + " " + data[i].lastName + "</option>";
+            }
+            $("#customerId").html(options);
+        });
+    }
+
+    function loadProducts() {
+        $.get("/api/products", function(data) {
+            var options = "";
+            for (var i = 0; i < data.length; i++) {
+                options += "<option value='" + data[i].productId + "'>" + data[i].name + "</option>";
+            }
+            $("#productId").html(options);
+        });
+    }
+
+    function saveOrder() {
+        var orderId = $("#orderId").val();
+        var status = $("#orderStatus").val();
+        var address = $("#shippingAddress").val();
+        var customerId = $("#customerId").val();
+        var productId = $("#productId").val();
+
+        if (status === "" || address === "") {
+            $("#message").html("Please fill all fields");
+            return;
+        }
+
+        var orderData = {
+            orderStatus: status,
+            shippingAddress: address,
+            customer: { id: parseInt(customerId) },
+            product: { productId: parseInt(productId) }
+        };
+
+        if (orderId === "") {
+            $.ajax({
+                url: "/api/orders",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(orderData),
+                success: function() {
+                    clearOrderInfo();
+                    $("#message").html("Order added");
+                    getAllOrders();
+                }
+            });
+        } else {
+            $.ajax({
+                url: "/api/orders/" + orderId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(orderData),
+                success: function() {
+                    clearOrderInfo();
+                    $("#message").html("Order updated");
+                    getAllOrders();
+                }
+            });
+        }
+    }
+
+    function editOrder(id) {
+        var apiURL = "/api/orders/" + id;
+        $.get(apiURL, function(data) {
+            $("#orderId").val(data.orderId);
+            $("#orderStatus").val(data.orderStatus);
+            $("#shippingAddress").val(data.shippingAddress);
+            if (data.customer) $("#customerId").val(data.customer.id);
+            if (data.product) $("#productId").val(data.product.productId);
+            $("#message").html("Edit the order and press Save");
+        });
+    }
+
+    function deleteOrder(id) {
+        $.ajax({
+            url: "/api/orders/" + id,
+            type: "DELETE",
+            success: function() {
+                clearOrderInfo();
+                $("#message").html("Order deleted");
+                getAllOrders();
+            }
+        });
+    }
+
+    $("#searchButton").click(function() { searchOrderByStatus(); });
+    $("#searchIdButton").click(function() { searchOrderById(); });
+    $("#showAllButton").click(function() { getAllOrders(); });
+    $("#saveButton").click(function() { saveOrder(); });
+    $("#clearButton").click(function() { clearOrderInfo(); });
+
+    loadCustomers();
+    loadProducts();
+    getAllOrders();
+</script>
+
+</body>
+</html>
