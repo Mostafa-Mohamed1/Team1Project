@@ -3,7 +3,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
-// Bechir Ben Zaied
+// Bechir Ben Zaied 764003678
 
 @Entity
 @Table(name= "categories")
