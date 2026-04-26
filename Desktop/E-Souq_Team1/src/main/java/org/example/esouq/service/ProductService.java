@@ -12,37 +12,43 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-      @Autowired
-      private ProductDAO productDAO;
+    @Autowired
+    private ProductDAO productDAO;
 
-      public Product saveProduct(Product product) {
-          return productDAO.save(product);
-      }
+    public Product saveProduct(Product product) {
+        return productDAO.save(product);
+    }
 
-      public List<Product> getAllProducts() {
-          return productDAO.findAll();
-      }
+    public List<Product> getAllProducts() {
+        return productDAO.findAll();
+    }
 
 
-      public Optional<Product> getProductById(Long id) {
+    public Optional<Product> getProductById(Long id) {
+        return productDAO.getProductById(id);     //using jpql query in product.dao
+    }
 
-          return productDAO.getProductById(id);
-      }
+    public List<Product> getProductsByName(String name) {
+        return productDAO.findByName(name);
+    }
 
-      public List<Product> getProductsByName(String name) {
-          return productDAO.findByName(name);
-      }
-    
-      @Transactional
-      public void deleteProductById(Long id) {
-          productDAO.deleteById(id);
-      }
+    @Transactional
+    public void deleteProductById(Long id) {
+        productDAO.deleteById(id);
+    }
 
-      @Transactional
-      public Product updateById(Long id, Product productToUpdate) {
-          Product existingProduct = productDAO.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-          existingProduct.setName(productToUpdate.getName());
-          existingProduct.setPrice(productToUpdate.getPrice());
-          return productDAO.save(existingProduct);
-      }
+    @Transactional
+    public Product updateById(Long id, Product productToUpdate) {
+        int rowsUpdated = productDAO.updateProductById(
+                id,
+                productToUpdate.getName(),
+                productToUpdate.getPrice()
+        );
+
+        if (rowsUpdated > 0) {
+            return productDAO.findById(id).orElse(null);
+        } else {
+            throw new RuntimeException("Product not found with id: " + id);
+        }
+    }
 }
