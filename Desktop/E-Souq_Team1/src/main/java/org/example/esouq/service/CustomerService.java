@@ -27,7 +27,7 @@ public class CustomerService {
     }
 
     public List<Customer> getCustomersByEmail(String email) {
-        return customerDAO.findCustomerByEmailByEmailContaining(email);
+        return customerDAO.findCustomerByEmailContaining(email);
     }
 
     @Transactional

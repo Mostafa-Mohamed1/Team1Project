@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface CustomerDAO extends JpaRepository<Customer, Integer> {
 
     // find customer by their email
-    @Query("SELECT c FROM Customer WHERE LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))")
-    List<Customer> findCustomerByEmailByEmailContaining(@Param("email") String email);
+    @Query("SELECT c FROM Customer c WHERE LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))")
+    List<Customer> findCustomerByEmailContaining(@Param("email") String email);
 
     // custom jpql for find by id
     @Query("SELECT c FROM Customer c WHERE c.id = :id")
