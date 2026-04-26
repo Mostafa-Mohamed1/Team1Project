@@ -1,0 +1,266 @@
+<!--Category HTML:-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+            background-color: whitesmoke;
+            color: black;
+        }
+
+        .page {
+            width: 900px;
+            max-width: 92%;
+            margin: auto;
+            padding: 10px 0 20px 0;
+        }
+
+        a {
+            color: darkgreen;
+        }
+
+        .box {
+            margin-top: 15px;
+        }
+
+        h1, h3 {
+            color: darkgreen;
+        }
+
+        input, button, textarea {
+            margin: 8px 8px 8px 0;
+        }
+
+        input, textarea {
+            width: 220px;
+        }
+
+        #message {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="ui container page">
+    <h1 class="ui green header">Categories</h1>
+
+    <p>
+        <a href="index.html">Home</a> |
+        <a href="category.html">Categories</a>
+    </p>
+
+    <p>This page lets you search, add, edit, and delete categories.</p>
+
+    <div class="ui raised segment form box">
+        <h3 class="ui green header">Search by name</h3>
+        <input type="text" id="searchName" placeholder="Enter category name">
+        <button id="searchButton" class="ui green button">Search</button>
+    </div>
+
+    <div class="ui raised segment form box">
+        <h3 class="ui green header">Search by id</h3>
+        <input type="number" id="searchId" placeholder="Enter category id">
+        <button id="searchIdButton" class="ui blue button">Search By ID</button>
+        <button id="showAllButton" class="ui teal button">Show All</button>
+    </div>
+
+    <div class="ui raised segment form box">
+        <h3 class="ui green header">Category form</h3>
+        <input type="hidden" id="categoryId">
+        <div>Category name</div>
+        <input type="text" id="categoryName" placeholder="Enter category name">
+        <div>Description</div>
+        <input type="text" id="categoryDescription" placeholder="Enter description">
+        <br>
+        <button id="saveButton" class="ui green button">Save</button>
+        <button id="clearButton" class="ui basic button">Clear</button>
+    </div>
+
+    <div class="ui raised segment box">
+        <h3 class="ui green header">Message</h3>
+        <div id="message" class="ui info message">Page ready</div>
+    </div>
+
+    <div class="ui raised segment box">
+        <h3 class="ui green header">Category List</h3>
+        <div id="result"></div>
+    </div>
+</div>
+
+<script>
+    function clearCategoryInfo() {
+        $("#categoryId").val("");
+        $("#categoryName").val("");
+        $("#categoryDescription").val("");
+        $("#message").html("Form cleared");
+    }
+
+    function showCategories(data) {
+        var htmlTable = "<table class='ui celled striped table'>";
+        htmlTable += "<tr>";
+        htmlTable += "<th>ID</th>";
+        htmlTable += "<th>Name</th>";
+        htmlTable += "<th>Description</th>";
+        htmlTable += "<th>Actions</th>";
+        htmlTable += "</tr>";
+
+        for (var i = 0; i < data.length; i++) {
+            var line = data[i];
+            htmlTable += "<tr>";
+            htmlTable += "<td>" + line.categoryId + "</td>";
+            htmlTable += "<td>" + line.categoryName + "</td>";
+            htmlTable += "<td>" + line.categoryDescription + "</td>";
+            htmlTable += "<td>";
+            htmlTable += "<button class='ui tiny blue button' onclick='editCategory(" + line.categoryId + ")'>Edit</button> ";
+            htmlTable += "<button class='ui tiny red button' onclick='deleteCategory(" + line.categoryId + ")'>Delete</button>";
+            htmlTable += "</td>";
+            htmlTable += "</tr>";
+        }
+
+        htmlTable += "</table>";
+        $("#result").html(htmlTable);
+    }
+
+    function getAllCategories() {
+        var apiURL = "/api/categories";
+        $.get(apiURL, function(data) {
+            if (data.length === 0) {
+                $("#message").html("No categories found");
+                $("#result").html("");
+            } else {
+                $("#message").html("All categories loaded");
+                showCategories(data);
+            }
+        });
+    }
+
+    function searchCategoryByName() {
+        var name = $("#searchName").val();
+        var apiURL = "/api/categories/search?name=" + name;
+
+        if (name === "") {
+            $("#message").html("Please enter a category name");
+            return;
+        }
+
+        $.get(apiURL, function(data) {
+            if (data.length === 0) {
+                $("#message").html("No categories found");
+                $("#result").html("");
+            } else {
+                $("#message").html("Search completed");
+                showCategories(data);
+            }
+        });
+    }
+
+    function searchCategoryById() {
+        var id = $("#searchId").val();
+        var apiURL = "/api/categories/" + id;
+
+        if (id === "") {
+            $("#message").html("Please enter a category id");
+            return;
+        }
+
+        $.get(apiURL, function(data) {
+            if (data) {
+                var categories = [];
+                categories.push(data);
+                $("#message").html("Search completed");
+                showCategories(categories);
+            } else {
+                $("#message").html("No category found");
+                $("#result").html("");
+            }
+        }).fail(function() {
+            $("#message").html("No category found");
+            $("#result").html("");
+        });
+    }
+
+    function saveCategory() {
+        var categoryId = $("#categoryId").val();
+        var name = $("#categoryName").val();
+        var description = $("#categoryDescription").val();
+
+        if (name === "" || description === "") {
+            $("#message").html("Please enter category name and description");
+            return;
+        }
+
+        var categoryData = {
+            categoryName: name,
+            categoryDescription: description
+        };
+
+        if (categoryId === "") {
+            $.ajax({
+                url: "/api/categories",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(categoryData),
+                success: function() {
+                    clearCategoryInfo();
+                    $("#message").html("Category added");
+                    getAllCategories();
+                }
+            });
+        } else {
+            $.ajax({
+                url: "/api/categories/" + categoryId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(categoryData),
+                success: function() {
+                    clearCategoryInfo();
+                    $("#message").html("Category updated");
+                    getAllCategories();
+                }
+            });
+        }
+    }
+
+    function editCategory(id) {
+        var apiURL = "/api/categories/" + id;
+        $.get(apiURL, function(data) {
+            $("#categoryId").val(data.categoryId);
+            $("#categoryName").val(data.categoryName);
+            $("#categoryDescription").val(data.categoryDescription);
+            $("#message").html("Edit the category and press Save");
+        });
+    }
+
+    function deleteCategory(id) {
+        $.ajax({
+            url: "/api/categories/" + id,
+            type: "DELETE",
+            success: function() {
+                clearCategoryInfo();
+                $("#message").html("Category deleted");
+                getAllCategories();
+            }
+        });
+    }
+
+    $("#searchButton").click(function() { searchCategoryByName(); });
+    $("#searchIdButton").click(function() { searchCategoryById(); });
+    $("#showAllButton").click(function() { getAllCategories(); });
+    $("#saveButton").click(function() { saveCategory(); });
+    $("#clearButton").click(function() { clearCategoryInfo(); });
+
+    getAllCategories();
+</script>
+
+</body>
+</html>
