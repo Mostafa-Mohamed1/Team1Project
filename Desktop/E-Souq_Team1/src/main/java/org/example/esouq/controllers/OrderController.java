@@ -1,7 +1,7 @@
 package org.example.esouq.controllers;
 
 import jakarta.transaction.Transactional;
-import org.example.esouq.Service.OrderService;
+import org.example.esouq.service.OrderService;
 import org.example.esouq.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
