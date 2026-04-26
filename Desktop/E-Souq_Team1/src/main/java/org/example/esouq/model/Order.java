@@ -9,7 +9,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
+    @Column(length = 50, nullable = false)
     private String orderStatus;
+
+    @Column(length = 255, nullable = false)
     private String shippingAddress;
 
     @ManyToOne

@@ -18,15 +18,23 @@ public class OrderService {
     public Order saveOrder(Order order){
         return orderDao.save(order);
     }
+
     public List<Order> getAllOrders() {
         return orderDao.findAll();
     }
+
     public Optional<Order> getOrderById(int id) {
         return orderDao.findById(id);
     }
+
     public List<Order> getOrdersByStatus(String status) {
         return orderDao.findByOrderStatus(status);
     }
+
+    public List<Order> getOrdersByShippingAddress(String address) {
+        return orderDao.findByShippingAddress(address);
+    }
+
     @Transactional
     public void updateStatus(int id, String status) {
         orderDao.updateOrderStatusById(id, status);
